@@ -93,7 +93,7 @@ Licensed under MIT. See LICENSE in the repository.
 ## Demo
 You can view the demo for Vue Modified at the following link:
 
-[]()
+[http://kyleross.github.io/vue-modified/](http://kyleross.github.io/vue-modified/)
 
 ## Todo
 * Write some tests
