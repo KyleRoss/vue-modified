@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Vue Modified Example</title>
+    
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    
+    <style type="text/css">
+        body { margin-top: 20px; }
+        .form-container {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            background: #D2D9E0;
+            border-right: 1px solid #BBC3CB;
+        }
+    </style>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/0.11.4/vue.js"></script>
+    <script type="text/javascript" src="vue.modified.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid" id="modified-example">
+        <div class="row">
+            <div class="col-sm-4 col-md-3 col-lg-3 form-container">
+                <h4>Vue Modified Example</h4>
+                <hr>
+                <form action="#" onsubmit="return false;">
+                    <div class="form-group">
+                        <label for="fname">First Name</label>
+                        <input type="text" name="fname" id="fname" class="form-control" placeholder="First Name" v-model="form.firstName" v-modified="name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lname">Last Name</label>
+                        <input type="text" name="lname" id="lname" class="form-control" placeholder="Last Name" v-model="form.lastName" v-modified="name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">E-mail Address</label>
+                        <input type="text" name="email" id="email" class="form-control" placeholder="E-mail Address" v-model="form.email" v-modified>
+                    </div>
+                    
+                    <h4>Gender</h4>
+                    <div class="radio">
+                        <label for="gender-male">
+                            <input type="radio" name="gender" id="gender-male" value="male" v-model="form.gender" v-modified="gender" checked> Male
+                        </label>
+                        &nbsp; &nbsp;
+                        <label for="gender-female">
+                            <input type="radio" name="gender" id="gender-female" value="female" v-model="form.gender" v-modified="gender"> Female
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reference">How did you hear about us?</label>
+                        <select name="reference" id="reference" class="form-control" v-model="form.reference" v-modified>
+                            <option value="">--- Select One ---</option>
+                            <option value="google">Google</option>
+                            <option value="friend">Friend/Colleague</option>
+                            <option value="ad">Advertisement</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div v-if="form.reference == 'other'" v-component="reference" v-with="form" class="form-group" model="form.referenceOther" v-modified></div>
+                    
+                    <div class="checkbox">
+                        <label for="checkbox">
+                            <input type="checkbox" name="checkbox" id="checkbox" v-model="form.agree" v-modified> I've read the <a href="#">terms and conditions</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-8 col-md-9 col-sm-offset-4 col-md-offset-3 col-lg-offset-3">
+                <div class="panel panel-success">
+                    <div class="panel-heading"><div class="panel-title">Form Status</div></div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th width="300">Description</th>
+                                <th>Usage</th>
+                                <th width="90">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Form status</td>
+                                <td>
+                                    <code>vm.$modified();</code><br>
+                                    <code>vm.$touched();</code>
+                                </td>
+                                <td>
+                                    <span class="label label-danger" v-if="isModified()">MODIFIED</span>
+                                    <span class="label label-primary" v-if="isTouched()">TOUCHED</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Group <kbd>name</kbd> modified/touched</td>
+                                <td>
+                                    <code>vm.$modified('name');</code><br>
+                                    <code>vm.$touched('name');</code>
+                                </td>
+                                <td>
+                                    <span class="label label-danger" v-if="isModified('name')">MODIFIED</span>
+                                    <span class="label label-primary" v-if="isTouched('name')">TOUCHED</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Group <kbd>gender</kbd> modified/touched</td>
+                                <td>
+                                    <code>vm.$modified('gender');</code><br>
+                                    <code>vm.$touched('gender');</code>
+                                </td>
+                                <td>
+                                    <span class="label label-danger" v-if="isModified('gender')">MODIFIED</span>
+                                    <span class="label label-primary" v-if="isTouched('gender')">TOUCHED</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-4 col-md-4 col-sm-offset-4 col-md-offset-3 col-lg-offset-3">
+                <div class="panel panel-danger">
+                    <div class="panel-heading"><div class="panel-title">Vue Data <code>vm.$data.form</code></div></div>
+                    <div class="panel-body">
+                        <pre v-text="form | formatJSON"></pre>
+                    </div>
+                </div>
+                
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            Reset Modified State
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        If your form uses AJAX or is reset by the user, you can also reset the modified state of the form. By resetting the state
+                        it will set all fields to show as <code>modified: false</code> and the internal variable that stores the starting value 
+                        of the field will be updated to the current value. You can also reset the state based on group name instead of the entire
+                        form.
+                        
+                        <h4>Usage</h4>
+                        <code>vm.$resetModified();</code> - Entire form<br>
+                        <code>vm.$resetModified('someGroup');</code> - By group name
+                        
+                        <h4>Example</h4>
+                        <a href="#" class="btn btn-danger btn-sm" v-class="disabled: !isModified()" v-on="click: reset">Reset Form State</a>
+                        <a href="#" class="btn btn-danger btn-sm" v-class="disabled: !isModified('name')" v-on="click: reset($event, 'name')">Reset "name" State</a>
+                        <a href="#" class="btn btn-danger btn-sm" v-class="disabled: !isModified('gender')" v-on="click: reset($event, 'gender')">Reset "gender" State</a>
+                    </div>
+                </div>
+                
+                <p>
+                    <small>
+                        Heavily modified and gutted version of <a href="https://github.com/xrado/vue-validator" target="_blank">Vue Validator</a> by Radovan Lozej.
+                    </small>
+                </p>
+                <p><center>View on <a href="">GitHub</a></center></p>
+            </div>
+            
+            <div class="col-sm-4 col-md-5">
+                <div class="panel panel-warning">
+                    <div class="panel-heading"><div class="panel-title">Vue Modified - <code>vm.$data.vmodified</code></div></div>
+                    <div class="panel-body">
+                        <pre v-text="vmodified | formatJSON"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    <script type="text/javascript" src="demo/demo.js"></script>
+</body>
+</html>
